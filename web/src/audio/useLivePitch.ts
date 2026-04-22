@@ -9,10 +9,22 @@ export type LivePitchReading = {
   rms: number | null
 }
 
+export type MicDiagnostics = {
+  sampleRate: number
+  bufferSize: number
+  contextState: AudioContextState
+  rmsThreshold: number
+  clarityThreshold: number
+  bandpassHighpassHz: number
+  bandpassLowpassHz: number
+}
+
 export type UseLivePitch = {
   state: MicState
   reading: LivePitchReading
   error: string | null
+  deviceLabel: string | null
+  diagnostics: MicDiagnostics | null
   start: () => Promise<void>
   stop: () => void
 }
@@ -29,9 +41,16 @@ export type UseLivePitchOptions = {
 }
 
 const DEFAULT_UPDATE_HZ = 30
-const DEFAULT_RMS = 0.01
-const DEFAULT_CLARITY = 0.8
-const DEFAULT_BUFFER_SIZE = 2048
+// Laptop mics pick up acoustic instruments quietly. 0.003 keeps a low noise floor
+// but still catches strummed strings from 1-3 ft away.
+const DEFAULT_RMS = 0.003
+// Acoustic guitar's harmonic content can briefly dip YIN clarity below 0.8.
+// 0.6 is a reasonable floor before the result becomes unreliable.
+const DEFAULT_CLARITY = 0.6
+// 4096 samples @ 48 kHz ≈ 85 ms window — enough for clean detection of low E2 (82 Hz)
+// at the cost of a little latency. Latency budget still inside the <50 ms target
+// for the readout since we update at 30 Hz regardless.
+const DEFAULT_BUFFER_SIZE = 4096
 
 const INITIAL_READING: LivePitchReading = {
   frequency: null,
@@ -64,6 +83,8 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
   const [state, setState] = useState<MicState>('idle')
   const [reading, setReading] = useState<LivePitchReading>(INITIAL_READING)
   const [error, setError] = useState<string | null>(null)
+  const [deviceLabel, setDeviceLabel] = useState<string | null>(null)
+  const [diagnostics, setDiagnostics] = useState<MicDiagnostics | null>(null)
 
   const sessionRef = useRef<Session | null>(null)
 
@@ -77,6 +98,8 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
     void session.ctx.close().catch(() => {})
     setState('idle')
     setReading(INITIAL_READING)
+    setDeviceLabel(null)
+    setDiagnostics(null)
   }, [])
 
   const start = useCallback(async () => {
@@ -86,17 +109,61 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
+          // Keep echoCancellation/noiseSuppression off so pitch fidelity isn't munged,
+          // but autoGainControl ON — laptop mics are too quiet for an acoustic guitar
+          // 1-3 ft away without it, and dynamic compression doesn't affect pitch.
           echoCancellation: false,
           noiseSuppression: false,
-          autoGainControl: false,
+          autoGainControl: true,
         },
       })
 
       const ctx = new AudioContext()
+      // Chromium-based browsers open AudioContexts in "suspended" state until a user
+      // gesture resumes them. getUserMedia's grant counts as a gesture but doesn't
+      // auto-resume — without this, the graph never processes and every frame reads zero.
+      if (ctx.state === 'suspended') {
+        await ctx.resume()
+      }
+
       const source = ctx.createMediaStreamSource(stream)
+
+      // Bandpass the signal before pitch detection so YIN works on the guitar-relevant
+      // spectrum, not the full mic stream. 70 Hz cuts HVAC rumble and electrical hum
+      // (and sits comfortably below E2 = 82 Hz). 2000 Hz keeps several harmonics for
+      // clarity-gated detection while rejecting high-freq noise and stray transients.
+      const highpass = ctx.createBiquadFilter()
+      highpass.type = 'highpass'
+      highpass.frequency.value = 70
+      highpass.Q.value = 0.707 // Butterworth-ish, no resonance
+
+      const lowpass = ctx.createBiquadFilter()
+      lowpass.type = 'lowpass'
+      lowpass.frequency.value = 2000
+      lowpass.Q.value = 0.707
+
       const analyser = ctx.createAnalyser()
       analyser.fftSize = bufferSize
-      source.connect(analyser)
+
+      source.connect(highpass)
+      highpass.connect(lowpass)
+      lowpass.connect(analyser)
+
+      const tracks = stream.getAudioTracks()
+      if (tracks.length === 0) {
+        throw new Error('mic stream returned no audio tracks')
+      }
+      setDeviceLabel(tracks[0].label || 'unnamed device')
+
+      setDiagnostics({
+        sampleRate: ctx.sampleRate,
+        bufferSize,
+        contextState: ctx.state,
+        rmsThreshold,
+        clarityThreshold,
+        bandpassHighpassHz: highpass.frequency.value,
+        bandpassLowpassHz: lowpass.frequency.value,
+      })
 
       const detector = PitchDetector.forFloat32Array(bufferSize)
       // Pitchy rejects 0; it accepts (0, 1]. A tiny positive effectively disables its own
@@ -166,5 +233,5 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
     }
   }, [stop])
 
-  return { state, reading, error, start, stop }
+  return { state, reading, error, deviceLabel, diagnostics, start, stop }
 }

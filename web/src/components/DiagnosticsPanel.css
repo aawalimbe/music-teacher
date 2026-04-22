@@ -1,0 +1,110 @@
+.diag {
+  border: 1px solid #1f1f1f;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: #0d0d0f;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.8rem;
+  color: #c8c8c8;
+}
+
+.diag > summary {
+  cursor: pointer;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  font-size: 0.72rem;
+  padding: 0.35rem 0;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+.diag > summary::-webkit-details-marker {
+  display: none;
+}
+
+.diag > summary::before {
+  content: '▸ ';
+  color: #555;
+  margin-right: 0.3rem;
+}
+
+.diag[open] > summary::before {
+  content: '▾ ';
+}
+
+.diag__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.25rem;
+}
+
+.diag__kv {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.3rem 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #1c1c1e;
+}
+
+.diag__kv > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.diag__key {
+  color: #6a6a6a;
+}
+
+.diag__val {
+  color: #e5e5e5;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+
+.diag__spark-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 90px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diag__spark-label {
+  color: #6a6a6a;
+}
+
+.diag__spark {
+  color: #5ecb7a;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.diag__spark-value {
+  text-align: right;
+  color: #f3f3f3;
+}
+
+.diag__actions {
+  padding-top: 0.35rem;
+}
+
+@media (max-width: 480px) {
+  .diag__spark-row {
+    grid-template-columns: 44px 1fr 72px;
+    font-size: 0.75rem;
+  }
+  .diag__spark {
+    font-size: 0.8rem;
+  }
+}

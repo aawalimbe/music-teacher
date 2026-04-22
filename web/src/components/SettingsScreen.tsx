@@ -4,6 +4,7 @@ import {
   type Instrument,
   type SaMode,
 } from '../store'
+import { AdvancedSettings } from './AdvancedSettings'
 import { MovableSaCalibrator } from './MovableSaCalibrator'
 import './SettingsScreen.css'
 
@@ -154,10 +155,7 @@ export function SettingsScreen() {
 
       <details className="settings__advanced">
         <summary>Advanced</summary>
-        <p className="note">
-          Cents tolerances for the tuner (Sprint 3) and lesson grading (Sprint 5) will appear
-          here once those sprints land.
-        </p>
+        <AdvancedSettings />
       </details>
     </div>
   )

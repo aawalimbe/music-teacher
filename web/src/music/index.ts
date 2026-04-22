@@ -22,5 +22,6 @@ export {
   sargamToMidi,
   sargamToHz,
   centsDistance,
+  centsOffset,
 } from './convert'
 export { saMidiForMode } from './sa'

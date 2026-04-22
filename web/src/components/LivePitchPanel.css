@@ -17,11 +17,36 @@
   font-weight: 600;
 }
 
+.live-pitch__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.pills--tight {
+  gap: 0.35rem;
+}
+
 .mic {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mic__row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
+}
+
+.mic__device {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.72rem;
+  color: #6a6a6a;
+  margin-left: 0.1rem;
 }
 
 .mic__status {
@@ -36,6 +61,35 @@
 
 .mic__status--err {
   color: #e07979;
+}
+
+.level {
+  position: relative;
+  flex: 1 1 140px;
+  max-width: 240px;
+  height: 8px;
+  background: #1a1a1c;
+  border-radius: 4px;
+  margin-right: 3.25rem; /* leaves room for the value label outside */
+}
+
+.level__bar {
+  height: 100%;
+  background: linear-gradient(to right, #3a5c80, #5ecb7a);
+  border-radius: 4px;
+  transition: width 50ms linear;
+  min-width: 2px;
+}
+
+.level__value {
+  position: absolute;
+  left: calc(100% + 0.5rem);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.72rem;
+  color: #8c8c8c;
+  white-space: nowrap;
 }
 
 .readout {

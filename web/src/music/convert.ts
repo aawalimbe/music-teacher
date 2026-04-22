@@ -66,3 +66,9 @@ export function sargamToHz(sargam: Sargam, saMidi: number): number {
 export function centsDistance(detectedHz: number, targetHz: number): number {
   return Math.abs(1200 * Math.log2(detectedHz / targetHz))
 }
+
+// Signed cent offset: negative = detected is flat, positive = sharp.
+// Preferred for tuner display where direction matters.
+export function centsOffset(detectedHz: number, targetHz: number): number {
+  return 1200 * Math.log2(detectedHz / targetHz)
+}

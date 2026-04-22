@@ -179,6 +179,58 @@
   align-self: flex-start;
 }
 
+.advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.advanced__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.advanced__group-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.advanced__row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.advanced__label {
+  color: #c8c8c8;
+}
+
+.advanced__value {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.85rem;
+  color: #f3f3f3;
+  min-width: 52px;
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .advanced__row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .advanced__value {
+    text-align: left;
+  }
+}
+
 /* Narrow portrait phones */
 @media (max-width: 480px) {
   .settings {

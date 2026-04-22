@@ -1,0 +1,198 @@
+.tuner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #161618;
+  min-height: 180px;
+}
+
+.tuner--dim {
+  opacity: 0.55;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.tuner__placeholder {
+  color: #8c8c8c;
+  font-size: 0.9rem;
+}
+
+.tuner__needle-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.tuner__target {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.tuner__target-label {
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: #f3f3f3;
+  line-height: 1;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.tuner__target-label--dim {
+  color: #5a5a5a;
+}
+
+.tuner__hint {
+  font-size: 0.75rem;
+  color: #d9a54a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tuner__bar {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #2a2a2a;
+  overflow: hidden;
+}
+
+.tuner__bar--green {
+  box-shadow: 0 0 0 1px #5ecb7a inset;
+}
+
+.tuner__needle {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 3px;
+  margin-left: -1.5px;
+  background: #f3f3f3;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  transition: left 80ms linear;
+  pointer-events: none;
+}
+
+.tuner__tick {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  pointer-events: none;
+}
+
+.tuner__tick--left {
+  left: 6px;
+}
+
+.tuner__tick--center {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.tuner__tick--right {
+  right: 6px;
+}
+
+.tuner__cents-readout {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.9rem;
+  color: #c8c8c8;
+}
+
+.tuner__strings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  padding-top: 0.25rem;
+  border-top: 1px solid #222;
+  margin-top: 0.25rem;
+}
+
+.string {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: #1e1e20;
+  border: 1px solid transparent;
+  font-size: 0.85rem;
+  color: #c8c8c8;
+  min-height: 36px;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.string--active {
+  border-color: #4a4a4a;
+  background: #26262a;
+  color: #f3f3f3;
+}
+
+.string--tuned {
+  border-color: #2d5a36;
+  color: #9dd8ac;
+}
+
+.string__status {
+  width: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+/* Narrow portrait */
+@media (max-width: 480px) {
+  .tuner {
+    padding: 0.75rem;
+  }
+  .tuner__target-label {
+    font-size: 2rem;
+  }
+  .tuner__bar {
+    height: 32px;
+  }
+}
+
+/* Short landscape — needle area goes full-width at the top, strings become a compact side column */
+@media (orientation: landscape) and (max-height: 500px) {
+  .tuner {
+    flex-direction: row;
+    align-items: stretch;
+    padding: 0.75rem 1rem;
+    min-height: 0;
+    gap: 1rem;
+  }
+  .tuner__needle-area {
+    flex: 1 1 auto;
+    gap: 0.4rem;
+  }
+  .tuner__target-label {
+    font-size: 1.8rem;
+  }
+  .tuner__bar {
+    height: 28px;
+  }
+  .tuner__strings {
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    border-top: 0;
+    border-left: 1px solid #222;
+    padding: 0 0 0 0.75rem;
+    margin: 0;
+    gap: 0.25rem;
+  }
+  .string {
+    padding: 0.25rem 0.5rem;
+    min-height: 28px;
+  }
+}
