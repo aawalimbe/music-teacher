@@ -1,2 +1,5 @@
-export { SettingsScreen } from './SettingsScreen'
-export { LivePitchPanel } from './LivePitchPanel'
+export { Shell } from './Shell'
+export { Header } from './Header'
+export { LeftSidebar } from './LeftSidebar'
+export { RightSidebar } from './RightSidebar'
+export { MainPanel } from './MainPanel'

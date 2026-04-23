@@ -1,0 +1,48 @@
+.advanced {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.advanced__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.advanced__group-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8c8c8c;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.advanced__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.advanced__label {
+  color: #c8c8c8;
+}
+
+.advanced__value {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.8rem;
+  color: #f3f3f3;
+}
+
+.advanced .calibrator__slider {
+  min-height: 36px;
+}
+
+.advanced__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

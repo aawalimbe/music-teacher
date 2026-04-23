@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { LivePitchReading, MicDiagnostics, MicState } from '../audio'
+import './DiagnosticsPanel.css'
 
 // Temporary diagnostic aid for Sprint 3 mic debugging. Safe to remove once
 // the tuner works reliably against a real instrument.
@@ -81,8 +82,7 @@ export function DiagnosticsPanel({ state, reading, deviceLabel, diagnostics }: P
   const freqMax = Math.max(1, ...freqSeries.filter((f) => f > 0))
 
   return (
-    <details className="diag">
-      <summary>Diagnostics</summary>
+    <div className="diag">
       <div className="diag__body">
         <div className="diag__kv">
           <div>
@@ -151,7 +151,7 @@ export function DiagnosticsPanel({ state, reading, deviceLabel, diagnostics }: P
           </button>
         </div>
       </div>
-    </details>
+    </div>
   )
 }
 

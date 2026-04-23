@@ -60,6 +60,31 @@ export const SWARA_LATIN: Readonly<Record<Swara, string>> = {
   ni: 'Ni',
 }
 
+// Devanagari labels. Komal is rendered as the shuddha character followed by a ♭
+// glyph (and teevra with ♯) rather than Unicode combining marks, which render
+// inconsistently across system fonts on Windows/mac.
+export const SWARA_DEVANAGARI: Readonly<Record<Swara, string>> = {
+  sa: 'सा',
+  re_komal: 'रे♭',
+  re: 'रे',
+  ga_komal: 'ग♭',
+  ga: 'ग',
+  ma: 'म',
+  ma_teevra: 'म♯',
+  pa: 'प',
+  dha_komal: 'ध♭',
+  dha: 'ध',
+  ni_komal: 'नि♭',
+  ni: 'नि',
+}
+
+// Keep this local rather than importing from store to avoid a circular dep.
+type Script = 'latin' | 'devanagari'
+
+export function swaraLabel(s: Swara, script: Script): string {
+  return script === 'devanagari' ? SWARA_DEVANAGARI[s] : SWARA_LATIN[s]
+}
+
 export function isShuddha(s: Swara): boolean {
   return !s.includes('_')
 }

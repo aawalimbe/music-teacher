@@ -1,0 +1,57 @@
+.keyboard {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  display: block;
+}
+
+.keyboard__white {
+  fill: #f1efe9;
+  stroke: #1a1a1a;
+  stroke-width: 1;
+}
+
+.keyboard__white--active {
+  fill: #5ecb7a;
+}
+
+.keyboard__white--target {
+  stroke: #e7ad5b;
+  stroke-width: 3;
+  stroke-dasharray: 4 3;
+}
+
+.keyboard__black {
+  fill: #1b1b1d;
+  stroke: #0a0a0a;
+  stroke-width: 1;
+}
+
+.keyboard__black--active {
+  fill: #3d8a52;
+}
+
+.keyboard__black--target {
+  stroke: #e7ad5b;
+  stroke-width: 3;
+  stroke-dasharray: 4 3;
+}
+
+.keyboard__octave-label {
+  fill: #7a7a7a;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 11px;
+}
+
+.keyboard__highlight-bubble {
+  fill: #0b1a10;
+  stroke: #5ecb7a;
+  stroke-width: 1.5;
+}
+
+.keyboard__highlight-label {
+  fill: #c8f1d5;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}

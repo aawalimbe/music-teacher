@@ -1,25 +1,38 @@
-import { LivePitchPanel, SettingsScreen } from './components'
+import { useLivePitch } from './audio'
+import { Header } from './components/Header'
+import { LeftSidebar } from './components/LeftSidebar'
+import { MainPanel } from './components/MainPanel'
+import { RightSidebar } from './components/RightSidebar'
+import { Shell } from './components/Shell'
 import './App.css'
 
 function App() {
+  // Hoisted here so MainPanel's tabs and RightSidebar's diagnostics share one session.
+  const { state, reading, error, deviceLabel, diagnostics, start, stop } = useLivePitch()
+
   return (
-    <main className="shell">
-      <header className="shell__header">
-        <h1>Music Teacher</h1>
-        <p className="tagline">सा रे ग म प ध नि &middot; sargam-based, browser-first.</p>
-      </header>
-
-      <LivePitchPanel />
-
-      <SettingsScreen />
-
-      <footer className="shell__footer">
-        <p className="note">
-          Sprint 2 &middot; live pitch &rarr; swara readout. Tuner, diagrams, and lessons land in
-          Sprints 3&ndash;5.
-        </p>
-      </footer>
-    </main>
+    <Shell
+      header={<Header />}
+      left={<LeftSidebar />}
+      main={
+        <MainPanel
+          state={state}
+          reading={reading}
+          error={error}
+          deviceLabel={deviceLabel}
+          onStart={start}
+          onStop={stop}
+        />
+      }
+      right={
+        <RightSidebar
+          state={state}
+          reading={reading}
+          deviceLabel={deviceLabel}
+          diagnostics={diagnostics}
+        />
+      }
+    />
   )
 }
 

@@ -1,87 +1,66 @@
 import type { MicState } from '../audio'
+import { MicIcon, MicOffIcon } from './icons'
+import './MicControl.css'
 
 type Props = {
   state: MicState
   error: string | null
   onStart: () => void
   onStop: () => void
-  // Optional: when live, a small bar+number lets the user see the mic is receiving
-  // signal even if it's below the pitch-detection threshold.
   rms?: number | null
   deviceLabel?: string | null
 }
 
+// Normal speech peaks around 0.1-0.2 RMS; 0.3 is a reasonable full-scale cap.
+const LEVEL_FULL_SCALE = 0.3
+
 export function MicControl({ state, error, onStart, onStop, rms, deviceLabel }: Props) {
-  if (state === 'active') {
-    return (
-      <div className="mic">
-        <div className="mic__row">
-          <button type="button" className="pill pill--selected" onClick={onStop}>
-            Stop listening
-          </button>
-          <span className="mic__status mic__status--ok">mic live</span>
-          {rms != null && <LevelMeter rms={rms} />}
-        </div>
-        {deviceLabel && <div className="mic__device">input: {deviceLabel}</div>}
-      </div>
-    )
-  }
+  const label = buttonLabel(state)
+  const action = state === 'active' ? onStop : onStart
+  const disabled = state === 'requesting'
+  const status = statusText(state, error)
+  const levelPct = rms != null ? Math.min(100, (rms / LEVEL_FULL_SCALE) * 100) : 0
 
-  if (state === 'denied') {
-    return (
-      <div className="mic">
-        <button type="button" className="pill" onClick={onStart}>
-          Retry microphone
-        </button>
-        <span className="mic__status mic__status--err">
-          Blocked. Allow microphone access in your browser&apos;s site settings, then retry.
-        </span>
-      </div>
-    )
-  }
-
-  if (state === 'error') {
-    return (
-      <div className="mic">
-        <button type="button" className="pill" onClick={onStart}>
-          Retry
-        </button>
-        <span className="mic__status mic__status--err">{error ?? 'unknown error'}</span>
-      </div>
-    )
-  }
-
-  if (state === 'requesting') {
-    return (
-      <div className="mic">
-        <button type="button" className="pill" disabled>
-          Requesting…
-        </button>
-        <span className="mic__status">accept the browser prompt</span>
-      </div>
-    )
-  }
-
-  // idle
   return (
-    <div className="mic">
-      <button type="button" className="pill" onClick={onStart}>
-        Start listening
-      </button>
-    </div>
+    <button
+      type="button"
+      className={`mic-btn mic-btn--${state}`}
+      disabled={disabled}
+      onClick={action}
+      aria-label={label}
+      title={deviceLabel ?? undefined}
+    >
+      <span className="mic-btn__icon" aria-hidden>
+        {state === 'denied' ? <MicOffIcon size={18} /> : <MicIcon size={18} />}
+      </span>
+      <span className="mic-btn__label">{label}</span>
+      {state === 'active' && (
+        <span className="mic-btn__level" aria-hidden>
+          <span className="mic-btn__level-bar" style={{ width: `${levelPct}%` }} />
+        </span>
+      )}
+      {status && <span className="mic-btn__status">{status}</span>}
+    </button>
   )
 }
 
-// Normal speech peaks around 0.1-0.2 RMS; 0.3 is a reasonable full-scale cap
-// so the bar approaches "full" on a confident signal without clipping the scale.
-const LEVEL_FULL_SCALE = 0.3
+function buttonLabel(state: MicState): string {
+  switch (state) {
+    case 'active':
+      return 'Stop'
+    case 'requesting':
+      return 'Requesting…'
+    case 'denied':
+      return 'Retry mic'
+    case 'error':
+      return 'Retry'
+    default:
+      return 'Listen'
+  }
+}
 
-function LevelMeter({ rms }: { rms: number }) {
-  const pct = Math.min(100, (rms / LEVEL_FULL_SCALE) * 100)
-  return (
-    <div className="level" aria-label="input level" title={`rms ${rms.toFixed(4)}`}>
-      <div className="level__bar" style={{ width: `${pct}%` }} />
-      <span className="level__value">{rms.toFixed(4)}</span>
-    </div>
-  )
+function statusText(state: MicState, error: string | null): string | null {
+  if (state === 'denied') return 'blocked'
+  if (state === 'error') return error ?? 'error'
+  return null
 }

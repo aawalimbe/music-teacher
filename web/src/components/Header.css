@@ -1,0 +1,108 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  min-height: 56px;
+}
+
+.topbar__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.topbar__title h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #f3f3f3;
+  letter-spacing: -0.01em;
+}
+
+.topbar__tagline {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #7a7a7a;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compact state summary. Hidden on wider viewports where the sidebar is shown —
+   redundant there. Visible when either sidebar is gone or on narrow screens. */
+.topbar__summary {
+  display: none;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+
+.chip {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #1a1a1d;
+  color: #d4d4d4;
+  border: 1px solid #262629;
+  white-space: nowrap;
+}
+
+.chip--dim {
+  color: #9a9a9a;
+}
+
+.topbar__toggle {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #1a1a1c;
+  border: 1px solid #2a2a2a;
+  color: #c8c8c8;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.topbar__toggle:hover {
+  background: #232326;
+  border-color: #3d3d3d;
+  color: #f3f3f3;
+}
+
+/* Narrow screens: show the summary strip (sidebar is typically collapsed here),
+   hide the tagline to save space. */
+@media (max-width: 900px) {
+  .topbar__summary {
+    display: flex;
+  }
+  .topbar__tagline {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    gap: 0.4rem;
+    padding: 0.55rem 0.6rem;
+  }
+  .topbar__title h1 {
+    font-size: 0.95rem;
+  }
+  .chip {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+  }
+}

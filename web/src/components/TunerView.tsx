@@ -3,6 +3,7 @@ import { centsOffset, midiToHz } from '../music'
 import { getInstrumentDef, type TuningTarget } from '../instruments'
 import { useSettings } from '../store'
 import type { LivePitchReading, MicState } from '../audio'
+import './TunerView.css'
 
 type Props = {
   state: MicState
@@ -28,32 +29,46 @@ export function TunerView({ state, reading }: Props) {
   const { instrument, tunerGreenCents, tunerYellowCents } = useSettings()
   const def = getInstrumentDef(instrument)
 
+  // Lock the tuner to a specific string. When set, the needle only measures
+  // against that one target — makes focused tuning of a single string much
+  // easier than letting auto-detect jump between adjacent strings.
+  const [lockedLabel, setLockedLabel] = useState<string | null>(null)
+
   const nearest = useMemo<Nearest | null>(() => {
     if (reading.frequency == null) return null
+
+    // Octave-aware cents for one target. YIN often latches the 2nd harmonic of
+    // a low guitar string (E2 heard as ~164 Hz, not 82) because the harmonic
+    // is louder than the fundamental — checking ±1-octave partners recovers
+    // the right offset.
+    const octaveAwareCents = (f: number, targetHz: number): number => {
+      const candidates = [f, f / 2, f * 2]
+      let best = Infinity
+      for (const c of candidates) {
+        const cents = centsOffset(c, targetHz)
+        if (Math.abs(cents) < Math.abs(best)) best = cents
+      }
+      return best
+    }
+
+    if (lockedLabel != null) {
+      const t = def.tuningTargets.find((x) => x.label === lockedLabel)
+      if (!t) return null
+      const targetHz = midiToHz(t.midi)
+      return { target: t, targetHz, cents: octaveAwareCents(reading.frequency, targetHz) }
+    }
+
+    // Auto mode: pick the target closest to the detected pitch.
     let best: Nearest | null = null
-    // Octave-aware match: compare the detected pitch AND its ±1-octave partners
-    // against each target, picking whichever is closest. YIN often latches the
-    // 2nd harmonic of a low guitar string (E2 heard as ~164 Hz, not 82) because
-    // the harmonic is louder than the fundamental; this recovers the right string.
-    // False positives are bounded by the 200¢ ambiguous threshold downstream.
-    const candidates = [
-      reading.frequency,
-      reading.frequency / 2,
-      reading.frequency * 2,
-    ]
     for (const t of def.tuningTargets) {
       const targetHz = midiToHz(t.midi)
-      let bestCents = Infinity
-      for (const f of candidates) {
-        const c = centsOffset(f, targetHz)
-        if (Math.abs(c) < Math.abs(bestCents)) bestCents = c
-      }
-      if (best == null || Math.abs(bestCents) < Math.abs(best.cents)) {
-        best = { target: t, targetHz, cents: bestCents }
+      const c = octaveAwareCents(reading.frequency, targetHz)
+      if (best == null || Math.abs(c) < Math.abs(best.cents)) {
+        best = { target: t, targetHz, cents: c }
       }
     }
     return best
-  }, [reading.frequency, def])
+  }, [reading.frequency, def, lockedLabel])
 
   const ambiguous = nearest != null && Math.abs(nearest.cents) > AMBIGUOUS_THRESHOLD_CENTS
   const zone: Zone | null =
@@ -75,6 +90,17 @@ export function TunerView({ state, reading }: Props) {
 
   const resetSession = () => setTunedSession(new Set())
 
+  // When locked, always display the locked target even if there's no current
+  // audio — so the big letter doesn't disappear between plucks.
+  const lockedTarget = lockedLabel
+    ? def.tuningTargets.find((t) => t.label === lockedLabel)
+    : null
+  const displayTarget = nearest?.target ?? lockedTarget ?? null
+
+  function toggleLock(label: string) {
+    setLockedLabel((prev) => (prev === label ? null : label))
+  }
+
   if (state !== 'active') {
     return (
       <div className="tuner tuner--dim">
@@ -87,38 +113,41 @@ export function TunerView({ state, reading }: Props) {
     <div className="tuner">
       <div className="tuner__needle-area">
         <div className="tuner__target">
-          {nearest == null ? (
+          {displayTarget == null ? (
             <span className="tuner__target-label tuner__target-label--dim">—</span>
           ) : (
             <>
-              <span className="tuner__target-label">{nearest.target.shortLabel}</span>
+              <span className="tuner__target-label">{displayTarget.shortLabel}</span>
               {ambiguous && <span className="tuner__hint">between notes</span>}
+              {lockedLabel != null && !ambiguous && (
+                <span className="tuner__hint tuner__hint--lock">locked</span>
+              )}
             </>
           )}
         </div>
 
-        <div
-          className={`tuner__bar ${zone ? `tuner__bar--${zone}` : ''}`}
-          style={barGradient(tunerGreenCents, tunerYellowCents)}
-          aria-hidden
-        >
-          <div className="tuner__tick tuner__tick--left">−50¢</div>
-          <div className="tuner__tick tuner__tick--center">0</div>
-          <div className="tuner__tick tuner__tick--right">+50¢</div>
-          {nearest != null && !ambiguous && (
-            <div
-              className="tuner__needle"
-              style={{ left: `${needleLeftPct(nearest.cents)}%` }}
-            />
-          )}
+        <div className="tuner__meter">
+          <div className="tuner__ticks" aria-hidden>
+            <span>−50¢</span>
+            <span>0</span>
+            <span>+50¢</span>
+          </div>
+          <div
+            className={`tuner__bar ${zone ? `tuner__bar--${zone}` : ''}`}
+            style={barGradient(tunerGreenCents, tunerYellowCents)}
+            aria-hidden
+          >
+            {nearest != null && !ambiguous && (
+              <div
+                className="tuner__needle"
+                style={{ left: `${needleLeftPct(nearest.cents)}%` }}
+              />
+            )}
+          </div>
         </div>
 
         <div className="tuner__cents-readout">
-          {nearest == null
-            ? 'play a note'
-            : ambiguous
-              ? `${signed(nearest.cents)} ¢ from ${nearest.target.shortLabel}`
-              : zoneText(nearest.cents, zone)}
+          {readoutText(nearest, zone, ambiguous, lockedTarget)}
         </div>
       </div>
 
@@ -126,17 +155,33 @@ export function TunerView({ state, reading }: Props) {
         {def.tuningTargets.map((t) => {
           const active = nearest?.target.label === t.label
           const tuned = tunedSession.has(t.label)
+          const locked = lockedLabel === t.label
+          const cls = [
+            'string',
+            active ? 'string--active' : '',
+            tuned ? 'string--tuned' : '',
+            locked ? 'string--locked' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')
           return (
-            <div
+            <button
+              type="button"
               key={t.label}
-              className={`string ${active ? 'string--active' : ''} ${tuned ? 'string--tuned' : ''}`}
-              title={`${t.label} · ${midiToHz(t.midi).toFixed(2)} Hz`}
+              className={cls}
+              onClick={() => toggleLock(t.label)}
+              aria-pressed={locked}
+              title={
+                locked
+                  ? `Unlock (auto-detect)`
+                  : `Lock tuner to ${t.label} · ${midiToHz(t.midi).toFixed(2)} Hz`
+              }
             >
               <span className="string__label">{t.shortLabel}</span>
               <span className="string__status">
-                {tuned ? '✓' : active ? '●' : ''}
+                {locked ? '🔒' : tuned ? '✓' : active ? '●' : ''}
               </span>
-            </div>
+            </button>
           )
         })}
         {tunedSession.size > 0 && (
@@ -147,6 +192,21 @@ export function TunerView({ state, reading }: Props) {
       </div>
     </div>
   )
+}
+
+function readoutText(
+  nearest: Nearest | null,
+  zone: Zone | null,
+  ambiguous: boolean,
+  lockedTarget: TuningTarget | null | undefined,
+): string {
+  if (nearest == null) {
+    return lockedTarget ? `play ${lockedTarget.shortLabel}` : 'play a note'
+  }
+  if (ambiguous) {
+    return `${signed(nearest.cents)} ¢ from ${nearest.target.shortLabel}`
+  }
+  return zoneText(nearest.cents, zone)
 }
 
 function classifyZone(absCents: number, green: number, yellow: number): Zone {

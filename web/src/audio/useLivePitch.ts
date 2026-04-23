@@ -45,9 +45,15 @@ const DEFAULT_UPDATE_HZ = 30
 // ~0.002-0.003 RMS after filtering. 0.002 catches those while still rejecting
 // pure idle silence (~1e-5 after enhancements are disabled).
 const DEFAULT_RMS = 0.002
-// Acoustic guitar's harmonic content can briefly dip YIN clarity below 0.8.
-// 0.6 is a reasonable floor before the result becomes unreliable.
-const DEFAULT_CLARITY = 0.6
+// Acoustic guitar plucks sustain at YIN clarity 0.8+; room noise / electrical
+// hum can occasionally spike to 0.6 but rarely crosses 0.7 with any stability.
+// 0.7 filters most ambient false positives while keeping real plucks through.
+const DEFAULT_CLARITY = 0.7
+// Require this many consecutive frames of valid detection before emitting a
+// frequency. Filters single-frame noise blips (which last ~33 ms at 30 Hz update),
+// while letting any real sustained note through after ~100 ms — well within our
+// <200 ms perceived-latency budget for live feedback.
+const STABILITY_FRAMES = 3
 // 4096 samples @ 48 kHz ≈ 85 ms window — enough for clean detection of low E2 (82 Hz)
 // at the cost of a little latency. Latency budget still inside the <50 ms target
 // for the readout since we update at 30 Hz regardless.
@@ -71,6 +77,10 @@ type Session = {
   lastUpdate: number
   running: boolean
   rafId: number
+  // Count of consecutive frames with a clarity-passing detection. We only emit
+  // a frequency once this reaches STABILITY_FRAMES so single-frame noise blips
+  // don't show up as "notes" in the UI.
+  consecValidFrames: number
 }
 
 export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
@@ -189,6 +199,7 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
         lastUpdate: 0,
         running: true,
         rafId: 0,
+        consecValidFrames: 0,
       }
       sessionRef.current = session
 
@@ -205,13 +216,24 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
           const rms = Math.sqrt(sumSq / session.buffer.length)
 
           if (rms < session.rmsThreshold) {
+            session.consecValidFrames = 0
             setReading({ frequency: null, clarity: null, rms })
           } else {
             const [pitch, clarity] = session.detector.findPitch(
               session.buffer,
               session.ctx.sampleRate,
             )
-            const frequency = clarity >= session.clarityThreshold ? pitch : null
+            const passed = clarity >= session.clarityThreshold
+            if (passed) {
+              session.consecValidFrames += 1
+            } else {
+              session.consecValidFrames = 0
+            }
+            // Stability gate: only surface the pitch once we've seen N consecutive
+            // valid frames. Filters single-frame noise spikes without burdening
+            // legitimate plucks (which produce a long streak of valid frames).
+            const frequency =
+              passed && session.consecValidFrames >= STABILITY_FRAMES ? pitch : null
             setReading({ frequency, clarity, rms })
           }
           session.lastUpdate = now

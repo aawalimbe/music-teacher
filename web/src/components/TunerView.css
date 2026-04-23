@@ -25,6 +25,7 @@
   flex-direction: column;
   gap: 0.6rem;
   align-items: center;
+  width: 100%;
 }
 
 .tuner__target {
@@ -53,14 +54,28 @@
   letter-spacing: 0.08em;
 }
 
+.tuner__meter {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tuner__ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  padding: 0 2px;
+}
+
 .tuner__bar {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  height: 36px;
+  height: 32px;
   border-radius: 4px;
   border: 1px solid #2a2a2a;
-  overflow: hidden;
 }
 
 .tuner__bar--green {
@@ -79,29 +94,6 @@
   pointer-events: none;
 }
 
-.tuner__tick {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.45);
-  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
-  pointer-events: none;
-}
-
-.tuner__tick--left {
-  left: 6px;
-}
-
-.tuner__tick--center {
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.tuner__tick--right {
-  right: 6px;
-}
-
 .tuner__cents-readout {
   font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
   font-size: 0.9rem;
@@ -113,23 +105,34 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   align-items: center;
-  padding-top: 0.25rem;
+  padding-top: 0.5rem;
   border-top: 1px solid #222;
-  margin-top: 0.25rem;
 }
 
 .string {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.6rem;
-  border-radius: 6px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 8px;
   background: #1e1e20;
   border: 1px solid transparent;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #c8c8c8;
-  min-height: 36px;
+  min-height: 44px;
   font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  touch-action: manipulation;
+}
+
+.string:hover:not(.string--locked) {
+  background: #2a2a2e;
+  border-color: #3a3a3e;
 }
 
 .string--active {
@@ -143,56 +146,71 @@
   color: #9dd8ac;
 }
 
+/* Locked target wins the visual — strong outline, slight background tint.
+   Takes precedence over active/tuned borders. */
+.string--locked {
+  border-color: #8ea9e8;
+  background: #1f2644;
+  color: #e7eefc;
+  box-shadow: 0 0 0 1px #8ea9e8;
+}
+
 .string__status {
-  width: 12px;
+  width: 14px;
   text-align: center;
   font-size: 0.85rem;
 }
 
-/* Narrow portrait */
+.tuner__hint--lock {
+  color: #8ea9e8;
+}
+
+/* Narrow viewports */
 @media (max-width: 480px) {
   .tuner {
     padding: 0.75rem;
+    gap: 0.75rem;
   }
   .tuner__target-label {
     font-size: 2rem;
   }
   .tuner__bar {
-    height: 32px;
+    height: 28px;
+  }
+  .tuner__ticks {
+    font-size: 0.65rem;
+  }
+  .tuner__cents-readout {
+    font-size: 0.82rem;
+  }
+  .string {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    min-height: 32px;
   }
 }
 
-/* Short landscape — needle area goes full-width at the top, strings become a compact side column */
+/* Short-landscape: keep needle area big + horizontal, strings still wrap horizontally
+   below (not a stacked column — the previous column layout was breaking on narrow
+   screens). */
 @media (orientation: landscape) and (max-height: 500px) {
   .tuner {
-    flex-direction: row;
-    align-items: stretch;
     padding: 0.75rem 1rem;
+    gap: 0.6rem;
     min-height: 0;
-    gap: 1rem;
-  }
-  .tuner__needle-area {
-    flex: 1 1 auto;
-    gap: 0.4rem;
   }
   .tuner__target-label {
     font-size: 1.8rem;
   }
   .tuner__bar {
-    height: 28px;
+    height: 26px;
   }
   .tuner__strings {
-    flex: 0 0 auto;
-    flex-direction: column;
-    align-items: stretch;
-    border-top: 0;
-    border-left: 1px solid #222;
-    padding: 0 0 0 0.75rem;
-    margin: 0;
-    gap: 0.25rem;
+    padding-top: 0.4rem;
   }
   .string {
+    min-height: 30px;
     padding: 0.25rem 0.5rem;
-    min-height: 28px;
+    font-size: 0.8rem;
   }
 }

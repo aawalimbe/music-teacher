@@ -8,34 +8,6 @@
   color: #c8c8c8;
 }
 
-.diag > summary {
-  cursor: pointer;
-  color: #8c8c8c;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-  font-size: 0.72rem;
-  padding: 0.35rem 0;
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  list-style: none;
-}
-
-.diag > summary::-webkit-details-marker {
-  display: none;
-}
-
-.diag > summary::before {
-  content: '▸ ';
-  color: #555;
-  margin-right: 0.3rem;
-}
-
-.diag[open] > summary::before {
-  content: '▾ ';
-}
-
 .diag__body {
   display: flex;
   flex-direction: column;

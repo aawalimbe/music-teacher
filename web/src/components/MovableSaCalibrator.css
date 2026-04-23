@@ -1,0 +1,40 @@
+.calibrator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.calibrator__row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.calibrator__slider {
+  flex: 1 1 220px;
+  min-height: 44px;
+  accent-color: #8ea9e8;
+}
+
+.calibrator__value {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.9rem;
+  color: #c8c8c8;
+  min-width: 90px;
+}
+
+.calibrator__note {
+  color: #f3f3f3;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.calibrator__hz {
+  color: #8c8c8c;
+  font-size: 0.8rem;
+}

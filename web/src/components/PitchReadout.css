@@ -1,0 +1,81 @@
+.readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 1.5rem 1rem;
+  border-radius: 10px;
+  background: #161618;
+  min-height: 200px;
+  transition: opacity 150ms ease;
+}
+
+.readout--dim {
+  opacity: 0.55;
+}
+
+.readout--warn .readout__swara {
+  color: #d9a54a;
+}
+
+.readout__swara {
+  font-size: 4.5rem;
+  line-height: 1;
+  font-weight: 500;
+  color: #f3f3f3;
+  letter-spacing: 0.02em;
+  font-variant-ligatures: none;
+}
+
+.readout__bracket {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.95rem;
+  color: #8c8c8c;
+  min-height: 1.2em;
+}
+
+.readout__saptak {
+  font-size: 0.95rem;
+  color: #8c8c8c;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+
+.readout__debug {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.78rem;
+  color: #6a6a6a;
+  margin-top: 0.5rem;
+}
+
+.readout__label {
+  font-size: 0.9rem;
+  color: #8c8c8c;
+}
+
+@media (max-width: 480px) {
+  .readout {
+    min-height: 160px;
+    padding: 1.25rem 0.75rem;
+  }
+  .readout__swara {
+    font-size: 3.5rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .readout {
+    min-height: 96px;
+    padding: 0.75rem 1rem;
+    flex-direction: row;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .readout__swara {
+    font-size: 2.6rem;
+  }
+  .readout__debug {
+    margin-top: 0;
+  }
+}

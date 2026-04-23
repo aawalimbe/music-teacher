@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react'
 import { midiToHz } from '../music'
 import { useSettings } from '../store'
+import './MovableSaCalibrator.css'
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { A4_HZ, A4_MIDI, hzToMidi, midiToHz } from '../tuning'
+import { A4_HZ, A4_MIDI, hzToMidi, midiToHz, midiToNoteName } from '../tuning'
 
 describe('tuning — MIDI ↔ Hz anchor', () => {
   test('A4 anchor round-trips exactly', () => {
@@ -19,5 +19,26 @@ describe('tuning — MIDI ↔ Hz anchor', () => {
 
   test('octave doubling = +12 MIDI', () => {
     expect(midiToHz(72) / midiToHz(60)).toBeCloseTo(2, 8)
+  })
+})
+
+describe('midiToNoteName', () => {
+  test('middle C and reference A', () => {
+    expect(midiToNoteName(60)).toBe('C4')
+    expect(midiToNoteName(69)).toBe('A4')
+  })
+
+  test('guitar tuning targets', () => {
+    expect(midiToNoteName(40)).toBe('E2')
+    expect(midiToNoteName(45)).toBe('A2')
+    expect(midiToNoteName(50)).toBe('D3')
+    expect(midiToNoteName(55)).toBe('G3')
+    expect(midiToNoteName(59)).toBe('B3')
+    expect(midiToNoteName(64)).toBe('E4')
+  })
+
+  test('sharps render with music sharp glyph', () => {
+    expect(midiToNoteName(61)).toBe('C♯4')
+    expect(midiToNoteName(66)).toBe('F♯4')
   })
 })

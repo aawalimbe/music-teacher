@@ -1,0 +1,55 @@
+/* Shared primitive classes used across multiple components. */
+
+.pill {
+  border: 1px solid #2f2f2f;
+  background: #161616;
+  color: #e5e5e5;
+  padding: 0.55rem 1rem;
+  min-height: 44px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+.pill:hover:not(:disabled) {
+  background: #1f1f1f;
+  border-color: #4a4a4a;
+}
+
+.pill--selected {
+  background: #e7eefc;
+  border-color: #8ea9e8;
+  color: #1b2744;
+}
+
+.pill--selected:hover {
+  background: #dbe5fa;
+}
+
+.pill:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pill--small {
+  min-height: 36px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.85rem;
+  align-self: flex-start;
+}
+
+.note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #8c8c8c;
+  line-height: 1.5;
+}

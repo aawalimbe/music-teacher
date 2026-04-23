@@ -1,0 +1,19 @@
+.right-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem 1.5rem;
+  min-width: 280px;
+}
+
+.right-side__heading {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7a7a7a;
+  font-weight: 600;
+}
+
+.right-side__body .diag {
+  padding: 0.6rem 0.8rem;
+}

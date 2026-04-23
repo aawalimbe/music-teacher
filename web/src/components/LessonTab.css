@@ -1,0 +1,239 @@
+.lesson {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+  background: #161618;
+}
+
+.lesson__sa-warning {
+  padding: 0.75rem 1rem;
+  border: 1px solid #5a4a2d;
+  background: #2d2517;
+  color: #e7ad5b;
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+
+.lesson__split {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.lesson__target-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: flex-start;
+  padding: 1rem;
+  background: #121214;
+  border: 1px solid #1f1f1f;
+  border-radius: 10px;
+}
+
+.lesson__level-name {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #8c8c8c;
+  font-weight: 600;
+}
+
+.lesson__target-big {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.lesson__target-swara {
+  font-size: 3.4rem;
+  line-height: 1;
+  font-weight: 500;
+  color: #f3f3f3;
+}
+
+.lesson__target-western {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 1rem;
+  color: #8c8c8c;
+}
+
+.lesson__progress {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.lesson__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #3a3a3a;
+  background: transparent;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.lesson__dot--filled {
+  background: #5ecb7a;
+  border-color: #5ecb7a;
+}
+
+.lesson__hold {
+  height: 4px;
+  background: #1e1e22;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.lesson__hold-bar {
+  height: 100%;
+  background: linear-gradient(to right, #3a7a52, #5ecb7a);
+  transition: width 50ms linear;
+}
+
+.lesson__feedback {
+  margin: 0;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 0.95rem;
+  color: #c8c8c8;
+  min-height: 1.4em;
+}
+
+.lesson__feedback--good {
+  color: #9dd8ac;
+}
+
+.lesson__feedback--flat {
+  color: #9dbde7;
+}
+
+.lesson__feedback--sharp {
+  color: #e7ad5b;
+}
+
+.lesson__feedback--dim {
+  color: #7a7a7a;
+}
+
+.lesson__complete {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid #2d5a36;
+  background: #122018;
+  border-radius: 8px;
+}
+
+.lesson__complete-title {
+  margin: 0;
+  color: #9dd8ac;
+  font-weight: 600;
+}
+
+.lesson__diagram-pane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #121214;
+  border: 1px solid #1f1f1f;
+  border-radius: 10px;
+  min-height: 200px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.lesson__selector {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+  border-top: 1px solid #1f1f1f;
+}
+
+.lesson__level {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  min-height: 36px;
+  border-radius: 8px;
+  background: #1e1e20;
+  border: 1px solid transparent;
+  color: #c8c8c8;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+}
+
+.lesson__level:hover:not(.lesson__level--locked):not(.lesson__level--current) {
+  background: #26262a;
+  border-color: #3a3a3a;
+}
+
+.lesson__level--current {
+  background: #1f2644;
+  border-color: #8ea9e8;
+  color: #e7eefc;
+}
+
+.lesson__level--done {
+  color: #9dd8ac;
+}
+
+.lesson__level--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.lesson__level-mark {
+  font-size: 0.85rem;
+}
+
+/* Portrait / narrow: stack target pane above diagram pane. */
+@media (max-width: 720px) {
+  .lesson__split {
+    grid-template-columns: 1fr;
+  }
+  .lesson__target-swara {
+    font-size: 2.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .lesson {
+    padding: 0.75rem;
+  }
+  .lesson__target-swara {
+    font-size: 2.2rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .lesson {
+    padding: 0.6rem 0.8rem;
+    gap: 0.5rem;
+  }
+  .lesson__target-swara {
+    font-size: 1.9rem;
+  }
+  .lesson__target-pane {
+    padding: 0.6rem;
+    gap: 0.4rem;
+  }
+  .lesson__diagram-pane {
+    min-height: 0;
+    padding: 0.25rem;
+  }
+}

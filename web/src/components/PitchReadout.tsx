@@ -1,11 +1,14 @@
 import {
+  midiToNoteName,
+  sargamToMidi,
   saMidiForMode,
   SAPTAK_COMBINING,
-  SWARA_LATIN,
+  swaraLabel,
   type FrequencyResult,
 } from '../music'
-import { useSettings } from '../store'
+import { useSettings, type SargamScript } from '../store'
 import { useStickyPitch, type LivePitchReading, type MicState } from '../audio'
+import './PitchReadout.css'
 
 type Props = {
   state: MicState
@@ -13,10 +16,10 @@ type Props = {
 }
 
 export function PitchReadout({ state, reading }: Props) {
-  const { saMode, fixedSaMidi, movableSaHz } = useSettings()
+  const { saMode, fixedSaMidi, movableSaHz, sargamScript } = useSettings()
   const saMidi = saMidiForMode(saMode, fixedSaMidi, movableSaHz)
-  // Latched result: bridges brief clarity dips so notes don't flicker off-screen
-  // mid-sustain. The debug line below still shows raw per-frame values.
+  // Latched result: bridges brief clarity dips so notes don't flicker off-screen.
+  // Debug line below still shows raw per-frame values.
   const sticky = useStickyPitch(reading.frequency, saMidi)
 
   if (state !== 'active') {
@@ -31,7 +34,7 @@ export function PitchReadout({ state, reading }: Props) {
     return (
       <div className="readout readout--dim">
         <div className="readout__label">
-          Set your Sa in Settings &mdash; movable Sa is not calibrated yet.
+          Set your Sa in the sidebar &mdash; movable Sa is not calibrated yet.
         </div>
       </div>
     )
@@ -40,8 +43,9 @@ export function PitchReadout({ state, reading }: Props) {
   return (
     <div className={`readout ${resolvedVariant(sticky)}`}>
       <div className="readout__swara" aria-live="polite">
-        {swaraGlyph(sticky)}
+        {swaraGlyph(sticky, sargamScript)}
       </div>
+      <div className="readout__bracket">{westernBracket(sticky, saMidi)}</div>
       <div className="readout__saptak">{saptakLabel(sticky)}</div>
       <div className="readout__debug">{debugLine(reading, sticky)}</div>
     </div>
@@ -54,9 +58,15 @@ function resolvedVariant(result: FrequencyResult): string {
   return 'readout--dim'
 }
 
-function swaraGlyph(result: FrequencyResult): string {
+function swaraGlyph(result: FrequencyResult, script: SargamScript): string {
   if (result?.kind !== 'in_range') return '—'
-  return `${SWARA_LATIN[result.swara]}${SAPTAK_COMBINING[result.octave]}`
+  return `${swaraLabel(result.swara, script)}${SAPTAK_COMBINING[result.octave]}`
+}
+
+// Western note name in brackets for beginner readability, e.g. "(E4)".
+function westernBracket(result: FrequencyResult, saMidi: number): string {
+  if (result?.kind !== 'in_range') return ''
+  return `(${midiToNoteName(sargamToMidi({ swara: result.swara, octave: result.octave }, saMidi))})`
 }
 
 function saptakLabel(result: FrequencyResult): string {

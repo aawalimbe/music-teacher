@@ -1,0 +1,88 @@
+/* Workspace shell: header on top, three columns below.
+   Future left nav-drawer goes as an additional first column when needed. */
+.shell-grid {
+  --left-width: 0;
+  --right-width: 0;
+  --header-height: auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--left-width) 1fr var(--right-width);
+  grid-template-rows: var(--header-height) 1fr;
+  grid-template-areas:
+    'header header header'
+    'left   main   right';
+  transition: grid-template-columns 180ms ease;
+  background: #0d0d0f;
+}
+
+.shell-grid[data-left-open='true'] {
+  --left-width: 260px;
+}
+.shell-grid[data-right-open='true'] {
+  --right-width: 320px;
+}
+
+.shell-grid__header {
+  grid-area: header;
+  border-bottom: 1px solid #1b1b1d;
+  background: #0f0f11;
+  z-index: 3;
+}
+
+.shell-grid__left {
+  grid-area: left;
+  overflow: hidden auto;
+  border-right: 1px solid #1b1b1d;
+  background: #0f0f11;
+  transition: border-right-color 180ms ease;
+}
+
+.shell-grid:not([data-left-open='true']) > .shell-grid__left {
+  border-right-color: transparent;
+}
+
+.shell-grid__main {
+  grid-area: main;
+  overflow: auto;
+  min-width: 0; /* lets flex/grid children shrink */
+}
+
+.shell-grid__right {
+  grid-area: right;
+  overflow: hidden auto;
+  border-left: 1px solid #1b1b1d;
+  background: #0f0f11;
+  transition: border-left-color 180ms ease;
+}
+
+.shell-grid:not([data-right-open='true']) > .shell-grid__right {
+  border-left-color: transparent;
+}
+
+/* Tablet: auto-reduce right sidebar to collapse first if open. Keep left. */
+@media (max-width: 1024px) {
+  .shell-grid[data-right-open='true'] {
+    --right-width: 280px;
+  }
+}
+
+/* Narrow: sidebars become full-width overlays on top of main when opened,
+   so the main area doesn't get squeezed into nothing. */
+@media (max-width: 720px) {
+  .shell-grid[data-left-open='true'] {
+    --left-width: 100vw;
+  }
+  .shell-grid[data-right-open='true'] {
+    --right-width: 100vw;
+  }
+
+  .shell-grid[data-left-open='true'] > .shell-grid__main,
+  .shell-grid[data-right-open='true'] > .shell-grid__main {
+    display: none;
+  }
+
+  .shell-grid[data-left-open='true'] > .shell-grid__right,
+  .shell-grid[data-right-open='true'] > .shell-grid__left {
+    display: none;
+  }
+}

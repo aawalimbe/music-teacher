@@ -1,0 +1,110 @@
+.mic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  min-height: 44px;
+  border-radius: 10px;
+  background: #161616;
+  border: 1px solid #2f2f2f;
+  color: #e5e5e5;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
+  touch-action: manipulation;
+}
+
+.mic-btn:hover:not(:disabled) {
+  background: #1f1f1f;
+  border-color: #4a4a4a;
+}
+
+.mic-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.mic-btn--active {
+  background: #14301b;
+  border-color: #2d5a36;
+  color: #c8f1d5;
+}
+
+.mic-btn--active:hover {
+  background: #193a21;
+}
+
+.mic-btn--denied,
+.mic-btn--error {
+  border-color: #5a2d2d;
+  color: #f1c8c8;
+}
+
+.mic-btn__icon {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mic-btn__icon svg {
+  display: block;
+}
+
+.mic-btn--active .mic-btn__icon {
+  color: #7ef0a0;
+  animation: mic-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes mic-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.mic-btn__label {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mic-btn__status {
+  position: relative;
+  z-index: 1;
+  font-size: 0.75rem;
+  color: #c8a8a8;
+  white-space: nowrap;
+}
+
+/* Embedded level bar: a thin strip along the bottom of the button that fills
+   proportionally to mic RMS. Visible only when state is 'active'. */
+.mic-btn__level {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.mic-btn__level-bar {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to right, #3a7a52, #5ecb7a);
+  transition: width 50ms linear;
+  min-width: 2px;
+}
+
+@media (max-width: 480px) {
+  .mic-btn {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}

@@ -1,9 +1,11 @@
-export { A4_HZ, A4_MIDI, midiToHz, hzToMidi } from './tuning'
+export { A4_HZ, A4_MIDI, midiToHz, hzToMidi, midiToNoteName } from './tuning'
 export {
   type Swara,
   SWARA_BY_SEMITONE,
   SEMITONE_BY_SWARA,
   SWARA_LATIN,
+  SWARA_DEVANAGARI,
+  swaraLabel,
   isShuddha,
 } from './swaras'
 export {
