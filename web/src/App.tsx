@@ -1,4 +1,5 @@
 import { useLivePitch } from './audio'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { Header } from './components/Header'
 import { LeftSidebar } from './components/LeftSidebar'
 import { MainPanel } from './components/MainPanel'
@@ -15,14 +16,16 @@ function App() {
       header={<Header />}
       left={<LeftSidebar />}
       main={
-        <MainPanel
-          state={state}
-          reading={reading}
-          error={error}
-          deviceLabel={deviceLabel}
-          onStart={start}
-          onStop={stop}
-        />
+        <ErrorBoundary>
+          <MainPanel
+            state={state}
+            reading={reading}
+            error={error}
+            deviceLabel={deviceLabel}
+            onStart={start}
+            onStop={stop}
+          />
+        </ErrorBoundary>
       }
       right={
         <RightSidebar

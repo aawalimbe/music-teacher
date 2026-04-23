@@ -201,6 +201,10 @@
   font-size: 0.85rem;
 }
 
+.lesson__level-swara {
+  font-weight: 500;
+}
+
 /* Portrait / narrow: stack target pane above diagram pane. */
 @media (max-width: 720px) {
   .lesson__split {

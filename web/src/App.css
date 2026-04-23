@@ -10,3 +10,29 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.error-fallback {
+  padding: 1.25rem;
+  border: 1px solid #5a2d2d;
+  background: #1f1414;
+  border-radius: 10px;
+  margin: 1rem;
+  color: #f1c8c8;
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.error-fallback h3 {
+  margin: 0 0 0.5rem;
+  color: #f3f3f3;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.error-fallback pre {
+  margin: 0.5rem 0;
+  padding: 0.6rem 0.75rem;
+  background: #160a0a;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}

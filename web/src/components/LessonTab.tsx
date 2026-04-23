@@ -58,13 +58,28 @@ export function LessonTab({ state, reading }: Props) {
 
   const completed = useMemo(() => new Set(completedLevels), [completedLevels])
 
-  const activeLevel: Level = useMemo(() => {
-    if (currentLevelId) {
-      const lvl = findLevel(currentLevelId)
-      if (lvl) return lvl
-    }
-    return nextIncompleteLevel(completed)
-  }, [currentLevelId, completed])
+  // activeLevel is STICKY — initialised once per mount from the persisted
+  // currentLevelId (falling back to nextIncompleteLevel if empty or if the
+  // persisted level is already done). After that, it only changes when the
+  // user explicitly picks a level or taps "Next level". This prevents the
+  // auto-advance bug where hitting 5/5 would mutate completedLevels, re-run
+  // a memo, and flip the active level before the user saw "Level complete".
+  const [activeLevelId, setActiveLevelIdLocal] = useState<string>(() => {
+    const persisted = currentLevelId ? findLevel(currentLevelId) : null
+    if (persisted && !completed.has(persisted.id)) return persisted.id
+    return nextIncompleteLevel(completed).id
+  })
+
+  const activeLevel: Level = useMemo(
+    () => findLevel(activeLevelId) ?? nextIncompleteLevel(completed),
+    [activeLevelId, completed],
+  )
+
+  // Single place to change the active level — updates local state + persists.
+  function pickLevel(id: string) {
+    setActiveLevelIdLocal(id)
+    setCurrentLevel(id)
+  }
 
   const targetMidi = saMidi != null ? sargamToMidi(activeLevel.target, saMidi) : null
 
@@ -137,7 +152,7 @@ export function LessonTab({ state, reading }: Props) {
 
   function advanceToNext() {
     const nextLevel = nextIncompleteLevel(new Set([...completed, activeLevel.id]))
-    setCurrentLevel(nextLevel.id)
+    pickLevel(nextLevel.id)
   }
 
   const targetSwaraLabel = swaraLabel(activeLevel.target.swara, sargamScript)
@@ -229,7 +244,7 @@ export function LessonTab({ state, reading }: Props) {
         </div>
       </div>
 
-      <div className="lesson__selector" role="tablist" aria-label="Levels">
+      <div className="lesson__selector" role="radiogroup" aria-label="Levels">
         {LEVELS.map((lvl) => {
           const unlocked = isUnlocked(lvl, completed)
           const done = completed.has(lvl.id)
@@ -242,18 +257,23 @@ export function LessonTab({ state, reading }: Props) {
           ]
             .filter(Boolean)
             .join(' ')
+          const swaraTxt = swaraLabel(lvl.target.swara, sargamScript)
+          const glyph = SAPTAK_COMBINING[lvl.target.octave]
           return (
             <button
               key={lvl.id}
               type="button"
-              role="tab"
-              aria-selected={current}
+              role="radio"
+              aria-checked={current}
               className={cls}
-              onClick={() => unlocked && setCurrentLevel(lvl.id)}
+              onClick={() => unlocked && pickLevel(lvl.id)}
               disabled={!unlocked}
               title={unlocked ? lvl.name : 'Locked — pass earlier levels first'}
             >
-              <span>{lvl.name.split(' ')[0]}</span>
+              <span className="lesson__level-swara">
+                {swaraTxt}
+                {glyph}
+              </span>
               <span className="lesson__level-mark">
                 {done ? '✓' : !unlocked ? '🔒' : ''}
               </span>

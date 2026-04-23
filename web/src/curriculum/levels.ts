@@ -60,6 +60,13 @@ export const LEVELS: readonly Level[] = [
     target: { swara: 'ni', octave: 'madhya' },
     prerequisites: ['dha-madhya'],
   },
+  {
+    id: 'sa-taar',
+    name: 'Sa (taar)',
+    displayOrder: 8,
+    target: { swara: 'sa', octave: 'taar' },
+    prerequisites: ['ni-madhya'],
+  },
 ]
 
 export function isUnlocked(level: Level, completed: ReadonlySet<string>): boolean {
