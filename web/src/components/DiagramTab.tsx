@@ -48,7 +48,7 @@ export function DiagramTab({ state, reading }: Props) {
         }
       : null
   const captionWestern =
-    detectedMidi != null ? midiToNoteName(detectedMidi) : null
+    detectedMidi != null ? midiToNoteName(detectedMidi, sargamScript) : null
 
   // Precompute an in-range check purely for caption context, not for highlighting.
   void frequencyToSargam // referenced indirectly via useStickyPitch

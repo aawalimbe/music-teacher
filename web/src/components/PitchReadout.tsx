@@ -45,7 +45,7 @@ export function PitchReadout({ state, reading }: Props) {
       <div className="readout__swara" aria-live="polite">
         {swaraGlyph(sticky, sargamScript)}
       </div>
-      <div className="readout__bracket">{westernBracket(sticky, saMidi)}</div>
+      <div className="readout__bracket">{westernBracket(sticky, saMidi, sargamScript)}</div>
       <div className="readout__saptak">{saptakLabel(sticky)}</div>
       <div className="readout__debug">{debugLine(reading, sticky)}</div>
     </div>
@@ -63,10 +63,15 @@ function swaraGlyph(result: FrequencyResult, script: SargamScript): string {
   return `${swaraLabel(result.swara, script)}${SAPTAK_COMBINING[result.octave]}`
 }
 
-// Western note name in brackets for beginner readability, e.g. "(E4)".
-function westernBracket(result: FrequencyResult, saMidi: number): string {
+// Western (or Devanagari Safed/Kali) note name in brackets for beginner readability.
+function westernBracket(
+  result: FrequencyResult,
+  saMidi: number,
+  script: SargamScript,
+): string {
   if (result?.kind !== 'in_range') return ''
-  return `(${midiToNoteName(sargamToMidi({ swara: result.swara, octave: result.octave }, saMidi))})`
+  const midi = sargamToMidi({ swara: result.swara, octave: result.octave }, saMidi)
+  return `(${midiToNoteName(midi, script)})`
 }
 
 function saptakLabel(result: FrequencyResult): string {

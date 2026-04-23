@@ -41,4 +41,18 @@ describe('midiToNoteName', () => {
     expect(midiToNoteName(61)).toBe('C♯4')
     expect(midiToNoteName(66)).toBe('F♯4')
   })
+
+  test('devanagari mode returns Safed/Kali names with subscript octave', () => {
+    // Middle C = Safed 1 octave 4
+    expect(midiToNoteName(60, 'devanagari')).toBe('सफेद १₄')
+    // A4 = Safed 6 octave 4
+    expect(midiToNoteName(69, 'devanagari')).toBe('सफेद ६₄')
+    // E4 = Safed 3 octave 4
+    expect(midiToNoteName(64, 'devanagari')).toBe('सफेद ३₄')
+    // Sharps/komal-position = Kali row
+    expect(midiToNoteName(61, 'devanagari')).toBe('काली १₄')
+    expect(midiToNoteName(66, 'devanagari')).toBe('काली ३₄')
+    // Low E2 = Safed 3 octave 2
+    expect(midiToNoteName(40, 'devanagari')).toBe('सफेद ३₂')
+  })
 })

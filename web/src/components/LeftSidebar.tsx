@@ -111,7 +111,10 @@ export function LeftSidebar() {
         {saMode === 'fixed' ? (
           <label className="side__label-row">
             <span className="side__label">
-              {saLabel} <span className="side__label-dim">({midiToNoteName(fixedSaMidi)})</span>
+              {saLabel}{' '}
+              <span className="side__label-dim">
+                ({midiToNoteName(fixedSaMidi, sargamScript)})
+              </span>
             </span>
             <select
               className="side__select"
@@ -121,7 +124,7 @@ export function LeftSidebar() {
             >
               {SA_OPTIONS.map((midi) => (
                 <option key={midi} value={midi}>
-                  {midiToNoteName(midi)}
+                  {midiToNoteName(midi, sargamScript)}
                 </option>
               ))}
             </select>

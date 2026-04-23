@@ -10,11 +10,42 @@ export function hzToMidi(hz: number): number {
   return A4_MIDI + 12 * Math.log2(hz / A4_HZ)
 }
 
-const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const
+const NOTE_NAMES_LATIN = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const
+
+// Harmonium-tradition Devanagari names: white keys (Safed 1-7) and black keys (Kali 1-5).
+// What vocal teachers and harmonium learners actually say, instead of abstract letters.
+const NOTE_NAMES_DEVANAGARI = [
+  'सफेद १', // C  → Safed 1
+  'काली १', // C♯ → Kali 1
+  'सफेद २', // D  → Safed 2
+  'काली २', // D♯ → Kali 2
+  'सफेद ३', // E  → Safed 3
+  'सफेद ४', // F  → Safed 4
+  'काली ३', // F♯ → Kali 3
+  'सफेद ५', // G  → Safed 5
+  'काली ४', // G♯ → Kali 4
+  'सफेद ६', // A  → Safed 6
+  'काली ५', // A♯ → Kali 5
+  'सफेद ७', // B  → Safed 7
+] as const
+
+const SUBSCRIPT_DIGITS = ['₀', '₁', '₂', '₃', '₄', '₅', '₆', '₇', '₈', '₉'] as const
+
+type NoteScript = 'latin' | 'devanagari'
 
 // Scientific pitch notation for a MIDI number. C4 = 60 = middle C.
-export function midiToNoteName(midi: number): string {
+// In devanagari mode, returns the Safed/Kali name with the octave as a
+// Unicode subscript (e.g. MIDI 64 → "सफेद ३₄").
+export function midiToNoteName(midi: number, script: NoteScript = 'latin'): string {
   const rounded = Math.round(midi)
   const octave = Math.floor(rounded / 12) - 1
-  return `${NOTE_NAMES[((rounded % 12) + 12) % 12]}${octave}`
+  const pc = ((rounded % 12) + 12) % 12
+  if (script === 'devanagari') {
+    const octStr = String(octave)
+      .split('')
+      .map((d) => (d === '-' ? '₋' : SUBSCRIPT_DIGITS[Number(d)]))
+      .join('')
+    return `${NOTE_NAMES_DEVANAGARI[pc]}${octStr}`
+  }
+  return `${NOTE_NAMES_LATIN[pc]}${octave}`
 }

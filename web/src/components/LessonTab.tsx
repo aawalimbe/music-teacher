@@ -142,7 +142,7 @@ export function LessonTab({ state, reading }: Props) {
 
   const targetSwaraLabel = swaraLabel(activeLevel.target.swara, sargamScript)
   const targetOctaveGlyph = SAPTAK_COMBINING[activeLevel.target.octave]
-  const targetWestern = targetMidi != null ? midiToNoteName(targetMidi) : '—'
+  const targetWestern = targetMidi != null ? midiToNoteName(targetMidi, sargamScript) : '—'
 
   const centsFromTarget =
     reading.frequency != null && targetMidi != null

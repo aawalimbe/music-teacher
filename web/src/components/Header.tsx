@@ -73,9 +73,9 @@ function saSummary(
 ): string {
   const saName = swaraLabel('sa', script)
   if (saMode === 'fixed') {
-    return `${saName}=${midiToNoteName(fixedSaMidi)}`
+    return `${saName}=${midiToNoteName(fixedSaMidi, script)}`
   }
   if (movableSaHz == null) return `${saName}=?`
   const midi = Math.round(69 + 12 * Math.log2(movableSaHz / 440))
-  return `${saName}=${midiToNoteName(midi)}`
+  return `${saName}=${midiToNoteName(midi, script)}`
 }
