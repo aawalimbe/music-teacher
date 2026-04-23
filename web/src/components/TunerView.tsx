@@ -31,11 +31,25 @@ export function TunerView({ state, reading }: Props) {
   const nearest = useMemo<Nearest | null>(() => {
     if (reading.frequency == null) return null
     let best: Nearest | null = null
+    // Octave-aware match: compare the detected pitch AND its ±1-octave partners
+    // against each target, picking whichever is closest. YIN often latches the
+    // 2nd harmonic of a low guitar string (E2 heard as ~164 Hz, not 82) because
+    // the harmonic is louder than the fundamental; this recovers the right string.
+    // False positives are bounded by the 200¢ ambiguous threshold downstream.
+    const candidates = [
+      reading.frequency,
+      reading.frequency / 2,
+      reading.frequency * 2,
+    ]
     for (const t of def.tuningTargets) {
       const targetHz = midiToHz(t.midi)
-      const cents = centsOffset(reading.frequency, targetHz)
-      if (best == null || Math.abs(cents) < Math.abs(best.cents)) {
-        best = { target: t, targetHz, cents }
+      let bestCents = Infinity
+      for (const f of candidates) {
+        const c = centsOffset(f, targetHz)
+        if (Math.abs(c) < Math.abs(bestCents)) bestCents = c
+      }
+      if (best == null || Math.abs(bestCents) < Math.abs(best.cents)) {
+        best = { target: t, targetHz, cents: bestCents }
       }
     }
     return best
@@ -77,7 +91,7 @@ export function TunerView({ state, reading }: Props) {
             <span className="tuner__target-label tuner__target-label--dim">—</span>
           ) : (
             <>
-              <span className="tuner__target-label">{nearest.target.label}</span>
+              <span className="tuner__target-label">{nearest.target.shortLabel}</span>
               {ambiguous && <span className="tuner__hint">between notes</span>}
             </>
           )}
@@ -103,7 +117,7 @@ export function TunerView({ state, reading }: Props) {
           {nearest == null
             ? 'play a note'
             : ambiguous
-              ? `${signed(nearest.cents)} ¢ from ${nearest.target.label}`
+              ? `${signed(nearest.cents)} ¢ from ${nearest.target.shortLabel}`
               : zoneText(nearest.cents, zone)}
         </div>
       </div>
@@ -118,7 +132,7 @@ export function TunerView({ state, reading }: Props) {
               className={`string ${active ? 'string--active' : ''} ${tuned ? 'string--tuned' : ''}`}
               title={`${t.label} · ${midiToHz(t.midi).toFixed(2)} Hz`}
             >
-              <span className="string__label">{t.label}</span>
+              <span className="string__label">{t.shortLabel}</span>
               <span className="string__status">
                 {tuned ? '✓' : active ? '●' : ''}
               </span>

@@ -1,12 +1,11 @@
 import {
-  frequencyToSargam,
   saMidiForMode,
   SAPTAK_COMBINING,
   SWARA_LATIN,
   type FrequencyResult,
 } from '../music'
 import { useSettings } from '../store'
-import type { LivePitchReading, MicState } from '../audio'
+import { useStickyPitch, type LivePitchReading, type MicState } from '../audio'
 
 type Props = {
   state: MicState
@@ -16,6 +15,9 @@ type Props = {
 export function PitchReadout({ state, reading }: Props) {
   const { saMode, fixedSaMidi, movableSaHz } = useSettings()
   const saMidi = saMidiForMode(saMode, fixedSaMidi, movableSaHz)
+  // Latched result: bridges brief clarity dips so notes don't flicker off-screen
+  // mid-sustain. The debug line below still shows raw per-frame values.
+  const sticky = useStickyPitch(reading.frequency, saMidi)
 
   if (state !== 'active') {
     return (
@@ -35,15 +37,13 @@ export function PitchReadout({ state, reading }: Props) {
     )
   }
 
-  const result = frequencyToSargam(reading.frequency, saMidi)
-
   return (
-    <div className={`readout ${resolvedVariant(result)}`}>
+    <div className={`readout ${resolvedVariant(sticky)}`}>
       <div className="readout__swara" aria-live="polite">
-        {swaraGlyph(result)}
+        {swaraGlyph(sticky)}
       </div>
-      <div className="readout__saptak">{saptakLabel(result)}</div>
-      <div className="readout__debug">{debugLine(reading, result)}</div>
+      <div className="readout__saptak">{saptakLabel(sticky)}</div>
+      <div className="readout__debug">{debugLine(reading, sticky)}</div>
     </div>
   )
 }
@@ -67,7 +67,7 @@ function saptakLabel(result: FrequencyResult): string {
 
 function debugLine(reading: LivePitchReading, result: FrequencyResult): string {
   if (reading.frequency == null) {
-    return reading.rms != null ? `silence · rms ${reading.rms.toFixed(3)}` : '…'
+    return reading.rms != null ? `silence · rms ${reading.rms.toFixed(4)}` : '…'
   }
   const parts = [`${reading.frequency.toFixed(2)} Hz`]
   if (result?.kind === 'in_range') {

@@ -20,12 +20,15 @@ describe('instrument definitions', () => {
       'B3',
       'E4',
     ])
+    // Short labels read as EADGBE for a guitarist-familiar tuner display.
+    expect(def.tuningTargets.map((t) => t.shortLabel).join('')).toBe('EADGBE')
   })
 
   test('ukulele GCEA re-entrant, 4 strings, string-order 4→1', () => {
     const def = getInstrumentDef('ukulele')
     expect(def.kind).toBe('fretted')
     expect(def.tuningTargets.map((t) => t.label)).toEqual(['G4', 'C4', 'E4', 'A4'])
+    expect(def.tuningTargets.map((t) => t.shortLabel).join('')).toBe('GCEA')
     // G4 (67) is higher than C4 (60) — that's the re-entrant part.
     expect(def.tuningTargets[0].midi).toBeGreaterThan(def.tuningTargets[1].midi)
   })
@@ -35,8 +38,8 @@ describe('instrument definitions', () => {
     const hm = getInstrumentDef('harmonium')
     expect(kb.kind).toBe('keyed')
     expect(hm.kind).toBe('keyed')
-    expect(kb.tuningTargets).toEqual([{ label: 'A4', midi: 69 }])
-    expect(hm.tuningTargets).toEqual([{ label: 'A4', midi: 69 }])
+    expect(kb.tuningTargets).toEqual([{ label: 'A4', shortLabel: 'A', midi: 69 }])
+    expect(hm.tuningTargets).toEqual([{ label: 'A4', shortLabel: 'A', midi: 69 }])
   })
 
   test('A4 = 440 Hz across all targets named A4', () => {

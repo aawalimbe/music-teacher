@@ -8,9 +8,9 @@ export const ukulele: InstrumentDef = {
   displayName: 'Ukulele',
   kind: 'fretted',
   tuningTargets: [
-    { label: 'G4', midi: 67, stringIndex: 3 },
-    { label: 'C4', midi: 60, stringIndex: 2 },
-    { label: 'E4', midi: 64, stringIndex: 1 },
-    { label: 'A4', midi: 69, stringIndex: 0 },
+    { label: 'G4', shortLabel: 'G', midi: 67, stringIndex: 3 },
+    { label: 'C4', shortLabel: 'C', midi: 60, stringIndex: 2 },
+    { label: 'E4', shortLabel: 'E', midi: 64, stringIndex: 1 },
+    { label: 'A4', shortLabel: 'A', midi: 69, stringIndex: 0 },
   ],
 }

@@ -41,9 +41,10 @@ export type UseLivePitchOptions = {
 }
 
 const DEFAULT_UPDATE_HZ = 30
-// Laptop mics pick up acoustic instruments quietly. 0.003 keeps a low noise floor
-// but still catches strummed strings from 1-3 ft away.
-const DEFAULT_RMS = 0.003
+// Laptop mics pick up acoustic instruments quietly, and low-E plucks peak around
+// ~0.002-0.003 RMS after filtering. 0.002 catches those while still rejecting
+// pure idle silence (~1e-5 after enhancements are disabled).
+const DEFAULT_RMS = 0.002
 // Acoustic guitar's harmonic content can briefly dip YIN clarity below 0.8.
 // 0.6 is a reasonable floor before the result becomes unreliable.
 const DEFAULT_CLARITY = 0.6
@@ -129,12 +130,14 @@ export function useLivePitch(options: UseLivePitchOptions = {}): UseLivePitch {
       const source = ctx.createMediaStreamSource(stream)
 
       // Bandpass the signal before pitch detection so YIN works on the guitar-relevant
-      // spectrum, not the full mic stream. 70 Hz cuts HVAC rumble and electrical hum
-      // (and sits comfortably below E2 = 82 Hz). 2000 Hz keeps several harmonics for
-      // clarity-gated detection while rejecting high-freq noise and stray transients.
+      // spectrum, not the full mic stream. 55 Hz gives E2 (82 Hz) clear headroom above
+      // the corner — biquad filters have a gentle rolloff, not a brick wall, so 70 Hz
+      // was attenuating E2 meaningfully. 55 Hz still rejects 50/60 Hz mains hum.
+      // 2000 Hz keeps several harmonics for clarity-gated detection while rejecting
+      // high-freq noise and stray transients.
       const highpass = ctx.createBiquadFilter()
       highpass.type = 'highpass'
-      highpass.frequency.value = 70
+      highpass.frequency.value = 55
       highpass.Q.value = 0.707 // Butterworth-ish, no resonance
 
       const lowpass = ctx.createBiquadFilter()

@@ -6,3 +6,4 @@ export {
   type UseLivePitch,
   type UseLivePitchOptions,
 } from './useLivePitch'
+export { useStickyPitch } from './useStickyPitch'

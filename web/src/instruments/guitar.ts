@@ -7,11 +7,11 @@ export const acousticGuitar: InstrumentDef = {
   displayName: 'Acoustic Guitar',
   kind: 'fretted',
   tuningTargets: [
-    { label: 'E2', midi: 40, stringIndex: 5 },
-    { label: 'A2', midi: 45, stringIndex: 4 },
-    { label: 'D3', midi: 50, stringIndex: 3 },
-    { label: 'G3', midi: 55, stringIndex: 2 },
-    { label: 'B3', midi: 59, stringIndex: 1 },
-    { label: 'E4', midi: 64, stringIndex: 0 },
+    { label: 'E2', shortLabel: 'E', midi: 40, stringIndex: 5 },
+    { label: 'A2', shortLabel: 'A', midi: 45, stringIndex: 4 },
+    { label: 'D3', shortLabel: 'D', midi: 50, stringIndex: 3 },
+    { label: 'G3', shortLabel: 'G', midi: 55, stringIndex: 2 },
+    { label: 'B3', shortLabel: 'B', midi: 59, stringIndex: 1 },
+    { label: 'E4', shortLabel: 'E', midi: 64, stringIndex: 0 },
   ],
 }
